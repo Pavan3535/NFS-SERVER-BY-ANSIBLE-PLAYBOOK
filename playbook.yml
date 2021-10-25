@@ -1,0 +1,53 @@
+---
+- name: creating nfsserver on serverside
+  hosts: 192.168.1.69
+  tasks:
+         
+    - name: installing packages
+      yum: 
+        name: nfs-utils
+        state: present
+
+    - name: share directory
+      file:
+        path: /nfs-share
+        state: directory
+        mode: 0777
+        setype: public_content_t
+
+    - name: share nfs directory
+      shell: echo '/nfs-share *(rw,sync)' > /etc/exports
+
+    - name: apply config
+      shell:
+        cmd: exportfs -r
+
+    - name: service start nfs-server
+      service:
+        name: nfs-server
+        state: restarted
+        enabled: true
+
+    - name: firewall allow for nfs
+      firewalld: 
+        service: nfs
+        immediate: true
+        permanent: true
+        state: enabled 
+
+- name: nfs play for client 
+  hosts: 192.168.1.39
+  tasks:
+          
+    - name: install nfs packages
+      yum:
+        name: nfs-utils
+        state: present
+            
+    - name: mount service
+      shell: mount 192.168.1.69:/nfs-share /mnt      
+      
+        
+    
+            
+         
