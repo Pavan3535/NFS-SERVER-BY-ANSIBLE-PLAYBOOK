@@ -1,0 +1,9 @@
+---
+- name: nfsreverse on client and server side
+  hosts: 192.168.204.129
+  tasks: `
+ 
+    - name: deleting packages
+      yum: 
+        name: nfs-utils
+        state: absent      
